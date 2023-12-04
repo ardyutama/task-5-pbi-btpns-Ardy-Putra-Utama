@@ -26,6 +26,5 @@ func ConnectDB() {
 
 	DB = db
 
-	// Auto Migrate
 	db.AutoMigrate(&models.User{}, &models.Photo{})
 }

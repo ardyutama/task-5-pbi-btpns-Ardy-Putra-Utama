@@ -20,7 +20,6 @@ func NewPhotoController() *PhotoController {
 	return &PhotoController{}
 }
 
-// UploadPhoto handles the endpoint for uploading a new photo.
 func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 	userID := helpers.ExtractUserID(c)
 
@@ -32,8 +31,6 @@ func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		errorMessages := gin.H{"errors": err}
-
-		// response := helpers.APIResponse("failed to upload user photo", http.StatusUnprocessableEntity, "error", errorMessages)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to upload user photo", "message": errorMessages})
 		return
 	}
@@ -44,7 +41,6 @@ func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 
 	fmt.Println("File path:", path)
 
-	// Save image to directory
 	err = c.SaveUploadedFile(file, "public/"+path)
 	fmt.Println(err)
 	if err != nil {
@@ -52,7 +48,6 @@ func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 		data := gin.H{
 			"is_uploaded": false,
 		}
-		// response := helpers.APIResponse("upload ke direktori gagal", http.StatusBadRequest, "error", data)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "upload ke direktori gagal", "message": data})
 		return
 	}
@@ -69,8 +64,6 @@ func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 		return
 	}
 
-	// Add more validation as needed
-
 	photoInput.UserID = userID
 	photoInput.PhotoURL = path
 	if err := database.DB.Create(&photoInput).Error; err != nil {
@@ -81,7 +74,6 @@ func (pc *PhotoController) UploadPhoto(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Photo uploaded successfully"})
 }
 
-// GetPhotos handles the endpoint for retrieving all photos.
 func (pc *PhotoController) GetPhotos(c *gin.Context) {
 	var photos []models.Photo
 	if err := database.DB.Find(&photos).Error; err != nil {
@@ -92,7 +84,6 @@ func (pc *PhotoController) GetPhotos(c *gin.Context) {
 	c.JSON(http.StatusOK, photos)
 }
 
-// UpdatePhoto handles the endpoint for updating photo details.
 func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 	userID := helpers.ExtractUserID(c)
 	photoID := c.Param("photoId")
@@ -108,8 +99,6 @@ func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 		return
 	}
 
-	// Add more validation as needed
-
 	photo := models.Photo{}
 	if err := database.DB.Where("id = ? AND user_id = ?", photoID, userID).First(&photo).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Photo not found"})
@@ -119,8 +108,6 @@ func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		errorMessages := gin.H{"errors": err}
-
-		// response := helpers.APIResponse("failed to upload user photo", http.StatusUnprocessableEntity, "error", errorMessages)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to upload user photo", "message": errorMessages})
 		return
 	}
@@ -131,7 +118,6 @@ func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 
 	fmt.Println("File path:", path)
 
-	// Save image to directory
 	err = c.SaveUploadedFile(file, "public/"+path)
 	fmt.Println(err)
 	if err != nil {
@@ -139,12 +125,9 @@ func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 		data := gin.H{
 			"is_uploaded": false,
 		}
-		// response := helpers.APIResponse("upload ke direktori gagal", http.StatusBadRequest, "error", data)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "upload ke direktori gagal", "message": data})
 		return
 	}
-
-	// Update photo fields based on your requirements
 	photo.UserID = userID
 	photo.PhotoURL = path
 
@@ -156,7 +139,6 @@ func (pc *PhotoController) UpdatePhoto(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Photo updated successfully"})
 }
 
-// DeletePhoto handles the endpoint for deleting a photo.
 func (pc *PhotoController) DeletePhoto(c *gin.Context) {
 	userID := helpers.ExtractUserID(c)
 	photoID := c.Param("photoId")

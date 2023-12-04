@@ -39,7 +39,6 @@ func AuthMiddleware() gin.HandlerFunc {
 }
 
 func stripTokenPrefix(tok string) (string, error) {
-	// split token to 2 parts
 	tokenParts := strings.Split(tok, " ")
 
 	if len(tokenParts) < 2 {
